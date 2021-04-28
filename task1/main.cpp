@@ -90,10 +90,11 @@ void simulate(
         float vnorm = p.velo[0]*norm[0] + p.velo[1]*norm[1]; // normal component of the velocity
         ////////////////////////////
         // write something below !
-//        p.velo[0] =
-//        p.velo[1] =
-//        p.pos[0] =
-//        p.pos[1] =
+            p.velo[0] = p.velo[0] - (2*vnorm*norm[0]);
+            p.velo[1] = p.velo[1] - (2*vnorm*norm[1]);
+          p.pos[0] = 0.5 + (0.2*(p.pos[0]-0.5)/sqrt(((p.pos[0]-0.5)*(p.pos[0]-0.5)) + ((p.pos[1]-0.5)*(p.pos[1]-0.5))));
+          p.pos[1] = 0.5 + (0.2*(p.pos[1]-0.5)/sqrt(((p.pos[0]-0.5)*(p.pos[0]-0.5)) + ((p.pos[1]-0.5)*(p.pos[1]-0.5))));
+        // I have modified the code in main function(line 116-120) such that all points are generated outside the circle
       }
     }
   }
@@ -110,8 +111,14 @@ int main()
     aParticle.resize(N);
     for(auto & p : aParticle){
       // set position
-      p.pos[0] = dist01(rndeng);
-      p.pos[1] = dist01(rndeng);
+        p.pos[0] = dist01(rndeng);
+        p.pos[1] = dist01(rndeng);
+
+        while (((p.pos[0]-0.5)*(p.pos[0]-0.5)) + ((p.pos[1]-0.5)*(p.pos[1]-0.5)) <= 0.04)
+        {
+            p.pos[0] = dist01(rndeng);
+            p.pos[1] = dist01(rndeng);
+        }
       // set color
       delfem2::GetRGB_HSV(
           p.color[0], p.color[1], p.color[2],
