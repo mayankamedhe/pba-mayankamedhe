@@ -29,7 +29,7 @@ Paste the screenshot below by editing this markdown document.
 
 === paset screenshot here ===
 
-
+![problem1](problem1.png)
 
 ## Problem 2
 
@@ -40,6 +40,7 @@ Paste the screenshot image of the result below.
 
 === paset screenshot here ===
 
+![problem2](problem2.png)
 
 
 
