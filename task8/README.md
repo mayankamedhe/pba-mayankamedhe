@@ -32,7 +32,7 @@ Build the program using `cmake`. Run the program and take a screenshot image of 
 
 === paste screenshot here ===
 
-
+![preoblem1](problem1.png)
 
 
 
@@ -52,7 +52,7 @@ Paste the screenshot image of the animation below:
 
 == paste screenshot image here==
 
-
+![problem2](problem2.png)
 
 
 
