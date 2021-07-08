@@ -105,12 +105,12 @@ int main()
         aXYt[ixy*2+1] = aXY[ixy*2+1] + dt*aUV[ixy*2+1];
       }
       for(unsigned int iq=0;iq<aQuad.size()/4;++iq){
-        const Eigen::Vector2f ap[4] = { // coordinates of quad's corner points (tentative shape)
+        const Eigen::Vector2f ap[4] = { // coordinates of quad's corner points (tentative shape) 
             Eigen::Map<Eigen::Vector2f>(aXYt.data()+aQuad[iq*4+0]*2),
             Eigen::Map<Eigen::Vector2f>(aXYt.data()+aQuad[iq*4+1]*2),
             Eigen::Map<Eigen::Vector2f>(aXYt.data()+aQuad[iq*4+2]*2),
             Eigen::Map<Eigen::Vector2f>(aXYt.data()+aQuad[iq*4+3]*2) };
-        const Eigen::Vector2f aq[4] = { // coordinates of quads' corner points (rest shape)
+        const Eigen::Vector2f aq[4] = { // coordinates of quads' corner points (rest shape) (capital X)
             Eigen::Map<const Eigen::Vector2f>(aXY0.data()+aQuad[iq*4+0]*2),
             Eigen::Map<const Eigen::Vector2f>(aXY0.data()+aQuad[iq*4+1]*2),
             Eigen::Map<const Eigen::Vector2f>(aXY0.data()+aQuad[iq*4+2]*2),
@@ -122,6 +122,27 @@ int main()
             aMass[aQuad[iq*4+3]] };
         // write some code below to rigidly transform the points in the rest shape (`aq`) such that the
         // weighted sum of squared distances against the points in the tentative shape (`qp`) is minimized (`am` is the weight).
+
+      const Eigen::Vector2f tcg = (am[0]*ap[0] + am[1]*ap[1] + am[2]*ap[2] + am[3]*ap[3])/(am[0] + am[1] + am[2] + am[3]);
+      const Eigen::Vector2f Tcg = (am[0]*aq[0] + am[1]*aq[1] + am[2]*aq[2] + am[3]*aq[3])/(am[0] + am[1] + am[2] + am[3]);
+
+      const Eigen::Matrix2f BA_transpose = am[0]*(ap[0] - tcg)*(aq[0] - tcg).transpose() +
+                                           am[1]*(ap[1] - tcg)*(aq[1] - tcg).transpose() +
+                                           am[2]*(ap[2] - tcg)*(aq[2] - tcg).transpose() +
+                                           am[3]*(ap[3] - tcg)*(aq[3] - tcg).transpose();
+ 
+      const Eigen::JacobiSVD<Eigen::Matrix2f> svd(BA_transpose, Eigen::ComputeFullU | Eigen::ComputeFullV);
+
+      const Eigen::Matrix2f R_optimal = svd.matrixU() * svd.matrixV().transpose();
+      const Eigen::Vector2f t_optimal = tcg - R_optimal * Tcg;
+
+      for(unsigned int i = 0; i<4; i++)
+      {
+        for (int j = 0; j < 2; j++)
+        {
+          aXYt [aQuad[iq*4+i]*2+j] = (R_optimal * aq[i] + t_optimal)(j);
+        }
+      } 
 
 
         // no edits further down
